@@ -1,0 +1,15 @@
+name: EggHuntBattle
+version: '1.0'
+main: org.jacco.eggHuntBattle.EggHuntBattle
+api-version: '1.21'
+commands:
+  egghuntbattle:
+    description: Main command for Egg Hunt Battle
+    usage: /egghuntbattle
+    aliases: [ehb]
+  egghuntbattleadmin:
+    description: Admin command for Egg Hunt Battle
+    usage: /egghuntbattleadmin
+    aliases: [ehba]
+    permission: egghuntbattle.admin
+    permission-message: You do not have permission to use this command.
