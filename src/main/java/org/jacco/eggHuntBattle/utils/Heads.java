@@ -13,7 +13,7 @@ public class Heads {
 
     private static final UUID RANDOM_UUID = UUID.fromString("92864445-51c5-4c3b-9039-517c9927d1b4");
 
-    public static ItemStack GetCustomHead(String url) {
+    public static ItemStack GetCustomHead(String url, String name) {
 
         ItemStack head = new ItemStack(org.bukkit.Material.PLAYER_HEAD, 1);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
@@ -33,6 +33,8 @@ public class Heads {
         profile.setTextures(textures);
 
         meta.setOwnerProfile(profile);
+        meta.setDisplayName(name);
+
         head.setItemMeta(meta);
 
         return head;

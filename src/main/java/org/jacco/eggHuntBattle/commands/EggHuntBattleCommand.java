@@ -17,7 +17,7 @@ public class EggHuntBattleCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("Usage: /eggHuntBattle <start|stop>");
+            sender.sendMessage("Usage: /egghuntbattle <join | leave>");
             return true;
         }
 
@@ -29,7 +29,7 @@ public class EggHuntBattleCommand implements CommandExecutor {
                 // Stop the game
                 break;
             default:
-                sender.sendMessage(ColorUtils.translateColorCodes("&cUnknown command. Usage: /eggHuntBattle <start|stop>"));
+                sender.sendMessage(ColorUtils.translateColorCodes("&cUnknown command. Usage: /egghuntbattle <join | leave>"));
                 break;
         }
         return true;
