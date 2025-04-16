@@ -22,4 +22,12 @@ public class EasterEgg {
 
     }
 
+    public String GetName() {
+        return name;
+    }
+
+    public String GetUrl() {
+        return url;
+    }
+
 }

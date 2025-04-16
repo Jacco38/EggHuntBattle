@@ -2,24 +2,18 @@ package org.jacco.eggHuntBattle.commands;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 import org.jacco.eggHuntBattle.arenautils.Arena;
 import org.jacco.eggHuntBattle.managers.ArenasManager;
 import org.jacco.eggHuntBattle.managers.PlayerManager;
-import org.jacco.eggHuntBattle.utils.EasterEgg;
 import org.jacco.eggHuntBattle.utils.Heads;
-import org.jacco.eggHuntBattle.utils.InventoryToBase64;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class EggHuntBattleAdminCommand implements CommandExecutor {
@@ -51,7 +45,7 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
                     break;
                 }
 
-                arena = new Arena(strings[1], ((Player) commandSender).getWorld(), ((Player) commandSender).getLocation(), ((Player) commandSender).getLocation(), new ArrayList<Location>(), 300);
+                arena = new Arena(strings[1], ((Player) commandSender).getWorld(), ((Player) commandSender).getLocation(), ((Player) commandSender).getLocation(), new ArrayList<Location>(), 300, false);
                 ArenasManager.AddArena(strings[1], arena);
 
                 commandSender.sendMessage("Created arena " + strings[1] + "!");
@@ -103,6 +97,8 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
                     PlayerManager.RestorePlayerInventory(player);
                     PlayerManager.SetPlayerInEdit(player, false, null);
 
+                    ArenasManager.HideArenaEggs(arena);
+
                     player.sendMessage("Set egg spawn mode disabled!");
 
                 } else {
@@ -116,6 +112,8 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
                     player.setGameMode(GameMode.CREATIVE);
 
                     PlayerManager.SetPlayerInEdit(player, true, arena);
+
+                    ArenasManager.ShowArenaEggs(arena);
 
                     player.sendMessage("Set egg spawn mode enabled!");
 
@@ -174,7 +172,59 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
 
                 arena = ArenasManager.GetArena(strings[1]);
 
-                player.sendMessage("Eggs in arena " + strings[1] + ":" + ArenasManager.GetEggSpawnCount(arena));
+                player.sendMessage("Eggs in arena " + strings[1] + ": " + ArenasManager.GetEggSpawnCount(arena));
+
+                break;
+            case "disable":
+
+                if (strings.length < 2) {
+                    commandSender.sendMessage("Usage: /ehba disable <arena>");
+                    break;
+                }
+
+                if (ArenasManager.GetArena(strings[1]) == null) {
+                    commandSender.sendMessage("Arena " + strings[1] + " does not exist!");
+                    break;
+                }
+
+                arena = ArenasManager.GetArena(strings[1]);
+
+                if (!arena.IsEnabled()) {
+                    commandSender.sendMessage("Arena " + strings[1] + " is already disabled!");
+                    break;
+                }
+
+                ArenasManager.SetArenaEnabled(arena, false);
+
+                commandSender.sendMessage("Disabled arena " + strings[1] + "!");
+
+                break;
+            case "enable":
+
+                if (strings.length < 2) {
+                    commandSender.sendMessage("Usage: /ehba enable <arena>");
+                    break;
+                }
+
+                if (ArenasManager.GetArena(strings[1]) == null) {
+                    commandSender.sendMessage("Arena " + strings[1] + " does not exist!");
+                    break;
+                }
+
+                arena = ArenasManager.GetArena(strings[1]);
+
+                if (arena.IsEnabled()) {
+                    player.sendMessage("Arena " + strings[1] + " is already enabled!");
+                    break;
+                }
+
+                if (ArenasManager.GetEggSpawnCount(arena) == 0) {
+                    player.sendMessage("No eggs in arena " + strings[1] + "!");
+                    break;
+                }
+
+                ArenasManager.SetArenaEnabled(arena, true);
+                player.sendMessage("Enabled arena " + strings[1] + "!");
 
                 break;
             case "reload":

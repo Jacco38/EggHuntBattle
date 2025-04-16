@@ -3,10 +3,15 @@ package org.jacco.eggHuntBattle.arenautils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
+import org.jacco.eggHuntBattle.managers.EggsManager;
 import org.jacco.eggHuntBattle.managers.PlayerManager;
 import org.jacco.eggHuntBattle.utils.EasterEgg;
 import org.jacco.eggHuntBattle.utils.GameState;
+import org.jacco.eggHuntBattle.utils.Heads;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,12 +25,13 @@ public class Arena {
     private Location lobbySpawn;
     private List<Location> eggLocations = new ArrayList<>();
     private int secondsLeft;
+    private boolean isEnabled;
 
     private ArrayList<Player> players = new ArrayList<>();
 
     private GameState gameState;
 
-    public Arena(String name, World world, Location playerSpawn, Location lobbySpawn, List<Location> eggSpawns, int secondsLeft) {
+    public Arena(String name, World world, Location playerSpawn, Location lobbySpawn, List<Location> eggSpawns, int secondsLeft, boolean isEnabled) {
         this.name = name;
         this.world = world;
         this.playerSpawn = playerSpawn;
@@ -33,6 +39,7 @@ public class Arena {
         this.gameState = GameState.WAITING;
         this.lobbySpawn = lobbySpawn;
         this.secondsLeft = secondsLeft;
+        this.isEnabled = isEnabled;
     }
 
     public void ResetArena() {
@@ -113,6 +120,32 @@ public class Arena {
 
     public void AddEggSpawn(Location location) {
         this.eggLocations.add(location);
+    }
+
+    public void SetEnabled(boolean enabled) {
+        this.isEnabled = enabled;
+    }
+
+    public boolean IsEnabled() {
+        return isEnabled;
+    }
+
+    public void ShowAllEggs() {
+        for (Location location : eggLocations) {
+            EasterEgg egg = EggsManager.GetNormalEgg();
+            location.getBlock().setBlockData(egg.GetBlockData());
+
+            Skull skull = (Skull) location.getBlock().getState();
+            skull.setOwnerProfile(Heads.GetOwnerProfile(egg.GetUrl()));
+
+            skull.update();
+        }
+    }
+
+    public void HideEggs() {
+        for (Location location : eggLocations) {
+            location.getBlock().setType(org.bukkit.Material.AIR);
+        }
     }
 
 }

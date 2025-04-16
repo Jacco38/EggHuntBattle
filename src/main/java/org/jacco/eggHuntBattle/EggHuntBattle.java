@@ -7,6 +7,8 @@ import org.jacco.eggHuntBattle.commands.EggHuntBattleAdminCommand;
 import org.jacco.eggHuntBattle.commands.EggHuntBattleCommand;
 import org.jacco.eggHuntBattle.listeners.PlayerBlockPlace;
 import org.jacco.eggHuntBattle.managers.ArenasManager;
+import org.jacco.eggHuntBattle.managers.EggsManager;
+import org.jacco.eggHuntBattle.utils.EasterEgg;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +50,10 @@ public final class EggHuntBattle extends JavaPlugin {
 
         // Load Arenas
         ArenasManager.LoadArenas();
+
+        // Add eggs
+        EggsManager.AddEgg(new EasterEgg("http://textures.minecraft.net/texture/68ddbba0a10370298c1b4a63fa49770cc99fb3ab11b560eb601e1dae605bcf30", "Normal Egg", 1));
+        EggsManager.AddEgg(new EasterEgg("http://textures.minecraft.net/texture/3ed037452223bda1381a17c3daafa71baac6ed8aa3a71ae36163cfeb61227b47", "Special Egg", 3));
 
     }
 

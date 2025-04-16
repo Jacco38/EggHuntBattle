@@ -127,8 +127,9 @@ public class ArenasManager {
             });
 
             int time = EggHuntBattle.GetArenasConfig().getInt("arenas." + arenaName + ".time-limit");
+            boolean isEnabled = EggHuntBattle.GetArenasConfig().getBoolean("arenas." + arenaName + ".enabled");
 
-            AddArena(arenaName, new Arena(arenaName, spawnWorld, spawnLocation, lobbyLocation, eggSpawns, time));
+            AddArena(arenaName, new Arena(arenaName, spawnWorld, spawnLocation, lobbyLocation, eggSpawns, time, isEnabled));
 
         });
 
@@ -182,8 +183,22 @@ public class ArenasManager {
         return arena.GetEggSpawns().size();
     }
 
+    public static void SetArenaEnabled(Arena arena, boolean enabled) {
+        arena.SetEnabled(enabled);
+        EggHuntBattle.GetArenasConfig().set("arenas." + arena.GetName() + ".enabled", enabled);
+        EggHuntBattle.SaveArenasConfig();
+    }
+
     public static List<String> GetArenas() {
         return new ArrayList<>(arenas.keySet());
+    }
+
+    public static void ShowArenaEggs(Arena arena) {
+        arena.ShowAllEggs();
+    }
+
+    public static void HideArenaEggs(Arena arena) {
+        arena.HideEggs();
     }
 
 }
