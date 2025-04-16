@@ -11,7 +11,7 @@ public class PlayerManager {
     static HashMap<Player, HashMap<String, Object>> playersState = new HashMap<>();
     static HashMap<Player, HashMap<String, ItemStack[]>> playersItems = new HashMap<>();
 
-    public static Boolean IsPLayerInEdit(Player player) {
+    public static Boolean IsPlayerInEdit(Player player) {
         if (playersState.containsKey(player)) {
             if (playersState.get(player).containsKey("editing")) {
                 return (Boolean) playersState.get(player).get("editing");
@@ -56,6 +56,25 @@ public class PlayerManager {
 
                 player.getInventory().setContents(items);
                 player.getInventory().setArmorContents(armor);
+
+                playersItems.remove(player);
+            }
+        }
+    }
+
+    public static void RestoreAllPlayersInventory() {
+        for (Player player : playersItems.keySet()) {
+            if (playersItems.get(player).containsKey("items")) {
+
+                player.getInventory().clear();
+
+                ItemStack[] items = playersItems.get(player).get("items");
+                ItemStack[] armor = playersItems.get(player).get("armor");
+
+                player.getInventory().setContents(items);
+                player.getInventory().setArmorContents(armor);
+
+                playersItems.remove(player);
             }
         }
     }
@@ -64,6 +83,56 @@ public class PlayerManager {
         if (playersState.containsKey(player)) {
             if (playersState.get(player).containsKey("editarena")) {
                 return (Arena) playersState.get(player).get("editarena");
+            }
+        }
+        return null;
+    }
+
+    public static boolean IsPlayerInGame(Player player) {
+        if (playersState.containsKey(player)) {
+            if (playersState.get(player).containsKey("inGame")) {
+                return (Boolean) playersState.get(player).get("inGame");
+            }
+        }
+        return false;
+    }
+
+    public static void SetPlayerInGame(Player player, Boolean inGame) {
+        if (!playersState.containsKey(player)) {
+            playersState.put(player, new HashMap<>());
+        }
+
+        playersState.get(player).put("inGame", inGame);
+    }
+
+    public static void SetPlayerGameArena(Player player, Arena arena) {
+        if (!playersState.containsKey(player)) {
+            playersState.put(player, new HashMap<>());
+        }
+
+        playersState.get(player).put("arena", arena);
+    }
+
+    public static void SavePlayerLocation(Player player) {
+        if (!playersState.containsKey(player)) {
+            playersState.put(player, new HashMap<>());
+        }
+
+        playersState.get(player).put("location", player.getLocation());
+    }
+
+    public static void RestorePlayerLocation(Player player) {
+        if (playersState.containsKey(player)) {
+            if (playersState.get(player).containsKey("location")) {
+                player.teleport((org.bukkit.Location) playersState.get(player).get("location"));
+            }
+        }
+    }
+
+    public static Arena GetPlayerGameArena(Player player) {
+        if (playersState.containsKey(player)) {
+            if (playersState.get(player).containsKey("arena")) {
+                return (Arena) playersState.get(player).get("arena");
             }
         }
         return null;

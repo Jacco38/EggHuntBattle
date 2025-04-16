@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jacco.eggHuntBattle.arenautils.Arena;
 import org.jacco.eggHuntBattle.managers.ArenasManager;
+import org.jacco.eggHuntBattle.managers.GameManager;
 import org.jacco.eggHuntBattle.managers.PlayerManager;
 import org.jacco.eggHuntBattle.utils.Heads;
 
@@ -19,8 +20,10 @@ import java.util.List;
 public class EggHuntBattleAdminCommand implements CommandExecutor {
 
     private final Plugin plugin;
+    private final GameManager gameManager;
 
-    public EggHuntBattleAdminCommand (Plugin plugin) {
+    public EggHuntBattleAdminCommand (Plugin plugin, GameManager gameManager) {
+        this.gameManager = gameManager;
         this.plugin = plugin;
     }
 
@@ -45,7 +48,7 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
                     break;
                 }
 
-                arena = new Arena(strings[1], ((Player) commandSender).getWorld(), ((Player) commandSender).getLocation(), ((Player) commandSender).getLocation(), new ArrayList<Location>(), 300, false);
+                arena = new Arena(strings[1], ((Player) commandSender).getWorld(), ((Player) commandSender).getLocation(), ((Player) commandSender).getLocation(), new ArrayList<Location>(), 300, false, 20, 2);
                 ArenasManager.AddArena(strings[1], arena);
 
                 commandSender.sendMessage("Created arena " + strings[1] + "!");
@@ -92,7 +95,7 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
 
                 arena = ArenasManager.GetArena(strings[1]);
 
-                if (PlayerManager.IsPLayerInEdit(player)) {
+                if (PlayerManager.IsPlayerInEdit(player)) {
 
                     PlayerManager.RestorePlayerInventory(player);
                     PlayerManager.SetPlayerInEdit(player, false, null);
@@ -224,6 +227,7 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
                 }
 
                 ArenasManager.SetArenaEnabled(arena, true);
+                gameManager.LoadEnabledArenas();
                 player.sendMessage("Enabled arena " + strings[1] + "!");
 
                 break;

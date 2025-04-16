@@ -18,7 +18,12 @@ public class PlayerBlockPlace implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
 
-        if (!PlayerManager.IsPLayerInEdit(player)) {
+        if (!PlayerManager.IsPlayerInEdit(player)) {
+            return;
+        }
+
+        if (PlayerManager.IsPlayerInGame(player)) {
+            event.setCancelled(true);
             return;
         }
 
@@ -40,7 +45,12 @@ public class PlayerBlockPlace implements Listener {
     public void OnBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        if (!PlayerManager.IsPLayerInEdit(player)) {
+        if (!PlayerManager.IsPlayerInEdit(player)) {
+            return;
+        }
+
+        if (PlayerManager.IsPlayerInGame(player)) {
+            event.setCancelled(true);
             return;
         }
 

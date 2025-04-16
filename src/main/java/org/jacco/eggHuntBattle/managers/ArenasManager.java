@@ -129,7 +129,12 @@ public class ArenasManager {
             int time = EggHuntBattle.GetArenasConfig().getInt("arenas." + arenaName + ".time-limit");
             boolean isEnabled = EggHuntBattle.GetArenasConfig().getBoolean("arenas." + arenaName + ".enabled");
 
-            AddArena(arenaName, new Arena(arenaName, spawnWorld, spawnLocation, lobbyLocation, eggSpawns, time, isEnabled));
+            int maxPlayers = EggHuntBattle.GetArenasConfig().getInt("arenas." + arenaName + ".max-players");
+            int minPlayers = EggHuntBattle.GetArenasConfig().getInt("arenas." + arenaName + ".min-players");
+
+            Arena arena = new Arena(arenaName, spawnWorld, spawnLocation, lobbyLocation, eggSpawns, time, true, maxPlayers, minPlayers);
+
+            AddArena(arenaName, arena);
 
         });
 
