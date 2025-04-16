@@ -4,6 +4,7 @@ arenas:
     name: Arena 1
     max-players: 30
     min-players: 2
+    time-limit: 300
     spawn:
       world: world
       x: 0.0
@@ -18,11 +19,4 @@ arenas:
       z: 0.0
       yaw: 0.0
       pitch: 0.0
-    eggSpawns:
-      1:
-        world: world
-        x: 0.0
-        y: 0.0
-        z: 0.0
-        yaw: 0.0
-        pitch: 0.0
+    eggSpawns: {}

@@ -10,6 +10,7 @@ import org.jacco.eggHuntBattle.utils.GameState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Arena {
 
@@ -17,30 +18,26 @@ public class Arena {
     private World world;
     private Location playerSpawn;
     private Location lobbySpawn;
-    private HashMap<Location, EasterEgg> eggSpawns = new HashMap<>();
+    private List<Location> eggLocations = new ArrayList<>();
+    private int secondsLeft;
 
     private ArrayList<Player> players = new ArrayList<>();
 
     private GameState gameState;
 
-    public Arena(String name, World world, Location playerSpawn, Location lobbySpawn, HashMap<Location, EasterEgg> eggSpawns) {
+    public Arena(String name, World world, Location playerSpawn, Location lobbySpawn, List<Location> eggSpawns, int secondsLeft) {
         this.name = name;
         this.world = world;
         this.playerSpawn = playerSpawn;
-        this.eggSpawns = eggSpawns;
+        this.eggLocations = eggSpawns;
         this.gameState = GameState.WAITING;
         this.lobbySpawn = lobbySpawn;
+        this.secondsLeft = secondsLeft;
     }
 
     public void ResetArena() {
 
-        // for every egg spawn
-        for (Location loc : eggSpawns.keySet()) {
-            EasterEgg egg = eggSpawns.get(loc);
-            Location eggLoc = loc.clone();
 
-            world.setBlockData(eggLoc, egg.GetBlockData());
-        }
 
     }
 
@@ -110,8 +107,12 @@ public class Arena {
         this.lobbySpawn = location;
     }
 
-    public HashMap<Location, EasterEgg> GetEggSpawns() {
-        return eggSpawns;
+    public List<Location> GetEggSpawns() {
+        return eggLocations;
+    }
+
+    public void AddEggSpawn(Location location) {
+        this.eggLocations.add(location);
     }
 
 }

@@ -2,6 +2,7 @@ package org.jacco.eggHuntBattle.managers;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jacco.eggHuntBattle.arenautils.Arena;
 
 import java.util.HashMap;
 
@@ -20,12 +21,13 @@ public class PlayerManager {
         return false;
     }
 
-    public static void SetPlayerInEdit(Player player, Boolean editing) {
+    public static void SetPlayerInEdit(Player player, Boolean editing, Arena arena) {
         if (!playersState.containsKey(player)) {
             playersState.put(player, new HashMap<>());
         }
 
         playersState.get(player).put("editing", editing);
+        playersState.get(player).put("editarena", arena);
     }
 
     public static void SavePlayerInventory(Player player) {
@@ -56,6 +58,15 @@ public class PlayerManager {
                 player.getInventory().setArmorContents(armor);
             }
         }
+    }
+
+    public static Arena GetPlayerEditArena(Player player) {
+        if (playersState.containsKey(player)) {
+            if (playersState.get(player).containsKey("editarena")) {
+                return (Arena) playersState.get(player).get("editarena");
+            }
+        }
+        return null;
     }
 
 }

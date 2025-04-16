@@ -18,6 +18,7 @@ import org.jacco.eggHuntBattle.utils.Heads;
 import org.jacco.eggHuntBattle.utils.InventoryToBase64;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,8 +35,10 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
 
         Arena arena;
 
+        Player player = (Player) commandSender;
+
         if (strings.length == 0) {
-            commandSender.sendMessage("Usage: /egghuntbattleadmin <create | delete | list>");
+            commandSender.sendMessage("Usage: /egghuntbattleadmin <create | delete | list | seteggs | setspawn | setlobby | enable | disable | reload>");
             return true;
         }
 
@@ -48,7 +51,7 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
                     break;
                 }
 
-                arena = new Arena(strings[1], ((Player) commandSender).getWorld(), ((Player) commandSender).getLocation(), ((Player) commandSender).getLocation(), new HashMap<Location, EasterEgg>());
+                arena = new Arena(strings[1], ((Player) commandSender).getWorld(), ((Player) commandSender).getLocation(), ((Player) commandSender).getLocation(), new ArrayList<Location>(), 300);
                 ArenasManager.AddArena(strings[1], arena);
 
                 commandSender.sendMessage("Created arena " + strings[1] + "!");
@@ -56,7 +59,21 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
                 break;
             case "delete":
                 // Handle delete command
-                commandSender.sendMessage("Deleting an Egg Hunt Battle arena...");
+
+                if (strings.length < 2) {
+                    commandSender.sendMessage("Usage: /ehba delete <arena>");
+                    break;
+                }
+
+                if (ArenasManager.GetArena(strings[1]) == null) {
+                    commandSender.sendMessage("Arena " + strings[1] + " does not exist!");
+                    break;
+                }
+
+                ArenasManager.RemoveArena(strings[1]);
+
+                commandSender.sendMessage("Deleted arena " + strings[1] + "!");
+
                 break;
             case "list":
                 // Handle list command
@@ -67,20 +84,26 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
                 break;
             case "seteggs":
                 // Handle setheads command
-                commandSender.sendMessage("Setting heads for the Egg Hunt Battle...");
 
                 //if strings[1] is not set
-                if (strings[1] == null) {
+                if (strings.length < 2) {
                     commandSender.sendMessage("Usage: /ehba seateggs <arena>");
                     break;
                 }
 
-                Player player = (Player) commandSender;
+                if (ArenasManager.GetArena(strings[1]) == null) {
+                    commandSender.sendMessage("Arena " + strings[1] + " does not exist!");
+                    break;
+                }
+
+                arena = ArenasManager.GetArena(strings[1]);
 
                 if (PlayerManager.IsPLayerInEdit(player)) {
 
                     PlayerManager.RestorePlayerInventory(player);
-                    PlayerManager.SetPlayerInEdit(player, false);
+                    PlayerManager.SetPlayerInEdit(player, false, null);
+
+                    player.sendMessage("Set egg spawn mode disabled!");
 
                 } else {
 
@@ -92,7 +115,9 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
 
                     player.setGameMode(GameMode.CREATIVE);
 
-                    PlayerManager.SetPlayerInEdit(player, true);
+                    PlayerManager.SetPlayerInEdit(player, true, arena);
+
+                    player.sendMessage("Set egg spawn mode enabled!");
 
                 }
 
@@ -134,9 +159,28 @@ public class EggHuntBattleAdminCommand implements CommandExecutor {
                 commandSender.sendMessage("Set lobby for arena " + strings[1] + " to your location!");
 
                 break;
+            case "eggs":
+                // Handle eggs command
+
+                if (strings.length < 2) {
+                    commandSender.sendMessage("Usage: /ehba eggs <arena>");
+                    break;
+                }
+
+                if (ArenasManager.GetArena(strings[1]) == null) {
+                    commandSender.sendMessage("Arena " + strings[1] + " does not exist!");
+                    break;
+                }
+
+                arena = ArenasManager.GetArena(strings[1]);
+
+                player.sendMessage("Eggs in arena " + strings[1] + ":" + ArenasManager.GetEggSpawnCount(arena));
+
+                break;
             case "reload":
                 // Handle reload command
                 commandSender.sendMessage("Reloading the plugin configuration...");
+                ArenasManager.LoadArenas();
                 break;
             default:
                 commandSender.sendMessage("Unknown command. Usage: /egghuntbattleadmin <create|delete|list>");

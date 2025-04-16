@@ -6,7 +6,6 @@ import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.jacco.eggHuntBattle.EggHuntBattle;
 import org.jacco.eggHuntBattle.arenautils.Arena;
-import org.jacco.eggHuntBattle.utils.EasterEgg;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +49,8 @@ public class ArenasManager {
 
     public static void RemoveArena(String name) {
         arenas.remove(name);
+        EggHuntBattle.GetArenasConfig().set("arenas." + name, null);
+        EggHuntBattle.SaveArenasConfig();
     }
 
     public static Arena GetArena(String name) {
@@ -112,12 +113,73 @@ public class ArenasManager {
                     (float) EggHuntBattle.GetArenasConfig().getDouble("arenas." + arenaName + ".lobby.yaw"),
                     (float) EggHuntBattle.GetArenasConfig().getDouble("arenas." + arenaName + ".lobby.pitch"));
 
-            HashMap<Location, EasterEgg> eggSpawns = new HashMap<>();
+            List<Location> eggSpawns = new ArrayList<Location>();
 
-            AddArena(arenaName, new Arena(arenaName, spawnWorld, spawnLocation, lobbyLocation, eggSpawns));
+            EggHuntBattle.GetArenasConfig().getConfigurationSection("arenas." + arenaName + ".eggSpawns").getKeys(false).forEach(eggSpawnName -> {
+                World eggWorld = Bukkit.getWorld(EggHuntBattle.GetArenasConfig().get("arenas." + arenaName + ".eggSpawns." + eggSpawnName + ".world").toString());
+                Location eggLocation = new Location(eggWorld,
+                        EggHuntBattle.GetArenasConfig().getDouble("arenas." + arenaName + ".eggSpawns." + eggSpawnName + ".x"),
+                        EggHuntBattle.GetArenasConfig().getDouble("arenas." + arenaName + ".eggSpawns." + eggSpawnName + ".y"),
+                        EggHuntBattle.GetArenasConfig().getDouble("arenas." + arenaName + ".eggSpawns." + eggSpawnName + ".z"),
+                        (float) EggHuntBattle.GetArenasConfig().getDouble("arenas." + arenaName + ".eggSpawns." + eggSpawnName + ".yaw"),
+                        (float) EggHuntBattle.GetArenasConfig().getDouble("arenas." + arenaName + ".eggSpawns." + eggSpawnName + ".pitch"));
+                eggSpawns.add(eggLocation);
+            });
+
+            int time = EggHuntBattle.GetArenasConfig().getInt("arenas." + arenaName + ".time-limit");
+
+            AddArena(arenaName, new Arena(arenaName, spawnWorld, spawnLocation, lobbyLocation, eggSpawns, time));
 
         });
 
+    }
+
+    public static void AddEggSpawn(Arena arena, Location location) {
+        arena.AddEggSpawn(location);
+
+        if (EggHuntBattle.GetArenasConfig().get("arenas." + arena.GetName() + ".eggSpawns") == null) {
+            EggHuntBattle.GetArenasConfig().set("arenas." + arena.GetName() + ".eggSpawns", null);
+        }
+
+        int name = arena.GetEggSpawns().size() + 1;
+
+        boolean done = false;
+
+        while (done == false) {
+            if (EggHuntBattle.GetArenasConfig().get("arenas." + arena.GetName() + ".eggSpawns." + name) == null) {
+                EggHuntBattle.GetArenasConfig().set("arenas." + arena.GetName() + ".eggSpawns." + name + ".world", location.getWorld().getName());
+                EggHuntBattle.GetArenasConfig().set("arenas." + arena.GetName() + ".eggSpawns." + name + ".x", location.getX());
+                EggHuntBattle.GetArenasConfig().set("arenas." + arena.GetName() + ".eggSpawns." + name + ".y", location.getY());
+                EggHuntBattle.GetArenasConfig().set("arenas." + arena.GetName() + ".eggSpawns." + name + ".z", location.getZ());
+                EggHuntBattle.GetArenasConfig().set("arenas." + arena.GetName() + ".eggSpawns." + name + ".yaw", location.getYaw());
+                EggHuntBattle.GetArenasConfig().set("arenas." + arena.GetName() + ".eggSpawns." + name + ".pitch", location.getPitch());
+                done = true;
+            } else {
+                name++;
+            }
+        }
+
+        EggHuntBattle.SaveArenasConfig();
+
+    }
+
+    public static void RemoveEggSpawn(Arena arena, Location location) {
+        arena.GetEggSpawns().remove(location);
+
+        EggHuntBattle.GetArenasConfig().getConfigurationSection("arenas." + arena.GetName() + ".eggSpawns").getKeys(false).forEach(eggSpawnName -> {
+            if (EggHuntBattle.GetArenasConfig().get("arenas." + arena.GetName() + ".eggSpawns." + eggSpawnName + ".x").equals(location.getX()) &&
+                    EggHuntBattle.GetArenasConfig().get("arenas." + arena.GetName() + ".eggSpawns." + eggSpawnName + ".y").equals(location.getY()) &&
+                    EggHuntBattle.GetArenasConfig().get("arenas." + arena.GetName() + ".eggSpawns." + eggSpawnName + ".z").equals(location.getZ())) {
+                EggHuntBattle.GetArenasConfig().set("arenas." + arena.GetName() + ".eggSpawns." + eggSpawnName, null);
+            }
+        });
+
+        EggHuntBattle.SaveArenasConfig();
+
+    }
+
+    public static int GetEggSpawnCount(Arena arena) {
+        return arena.GetEggSpawns().size();
     }
 
     public static List<String> GetArenas() {
